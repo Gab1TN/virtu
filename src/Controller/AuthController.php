@@ -32,12 +32,15 @@ class AuthController
         $username = $_POST['username'];
         $password = $_POST['password'];
 
-        if ($this->userModel->validatePassword($username, $password)) {
+        $user = $this->userModel->getUserByUsername($username);
+
+        if ($user && $this->userModel->validatePassword($user, $password)) {
             $this->sessionManager->setUser($username);
+            $this->sessionManager->setRole($user->getRole()->getName());
             header('Location: /bienvenue');
             exit;
         } else {
-            echo $this->twig->render('login.html.twig', ['error' => 'Identifiants erronnés']);
+            echo $this->twig->render('login.html.twig', ['error' => 'Identifiants incorrects']);
         }
     }
 }
